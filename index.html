@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 TicTacToe AI Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1e1e2e;
+            --bg-secondary: #313244;
+            --bg-tertiary: #45475a;
+            --text-primary: #cdd6f4;
+            --text-secondary: #a6adc8;
+            --accent-purple: #cba6f7;
+            --accent-blue: #89b4fa;
+            --accent-orange: #fab387;
+            --accent-green: #a6e3a1;
+            --accent-red: #f38ba8;
+            --accent-yellow: #f9e2af;
+            --border-color: #585b70;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            color: var(--accent-purple);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            background: var(--bg-secondary);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--accent-purple);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2, .card h3 {
+            color: var(--accent-purple);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            cursor: pointer;
+        }
+
+        .range-value {
+            text-align: center;
+            color: var(--accent-blue);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-purple);
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            background: #d4b3f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(203, 166, 247, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #a6c4fa;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: var(--bg-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Game Board Styles */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: var(--bg-tertiary);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: var(--bg-primary);
+            border: 3px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cell:hover:not(.disabled) {
+            background: var(--bg-secondary);
+            border-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        .cell.x {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
+        }
+
+        .cell.o {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-primary);
+        }
+
+        .cell.disabled {
+            cursor: not-allowed;
+        }
+
+        .cell.winning {
+            animation: pulse 0.5s ease infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .stat-card .label {
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .stat-card.wins .value { color: var(--accent-green); }
+        .stat-card.losses .value { color: var(--accent-red); }
+        .stat-card.draws .value { color: var(--accent-yellow); }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 30px;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+            border-radius: 15px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            line-height: 30px;
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        /* Training Log */
+        .training-log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .training-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .training-log::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        .training-log::-webkit-scrollbar-thumb {
+            background: var(--accent-purple);
+            border-radius: 4px;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .log-entry.success { color: var(--accent-green); }
+        .log-entry.warning { color: var(--accent-yellow); }
+        .log-entry.error { color: var(--accent-red); }
+        .log-entry.info { color: var(--accent-blue); }
+
+        /* Charts Container */
+        .chart-container {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* Model Cards for Arena */
+        .model-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .model-card:hover {
+            transform: translateX(5px);
+            border-left: 3px solid var(--accent-purple);
+        }
+
+        .model-card input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--accent-purple);
+        }
+
+        .model-info {
+            flex: 1;
+        }
+
+        .model-name {
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .model-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tournament Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background: var(--bg-tertiary);
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        .results-table tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        /* Status Messages */
+        .status {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: rgba(166, 227, 161, 0.2);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .status.error {
+            background: rgba(243, 139, 168, 0.2);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .status.info {
+            background: rgba(137, 180, 250, 0.2);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .status.warning {
+            background: rgba(249, 226, 175, 0.2);
+            border: 1px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        /* Confidence Display */
+        .confidence-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            max-width: 320px;
+            margin: 20px auto;
+        }
+
+        .confidence-cell {
+            padding: 10px;
+            text-align: center;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .confidence-cell .position {
+            font-weight: bold;
+            color: var(--accent-purple);
+        }
+
+        .confidence-cell .value {
+            color: var(--accent-blue);
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .collapsible-header:hover {
+            background: var(--bg-primary);
+        }
+
+        .collapsible-content {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-content {
+            max-height: 2000px;
+            padding: 20px;
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.open .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Parameter Presets */
+        .preset-btn {
+            padding: 8px 15px;
+            margin: 5px;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preset-btn:hover, .preset-btn.active {
+            background: var(--accent-purple);
+            border-color: var(--accent-purple);
+            color: var(--bg-primary);
+        }
+
+        /* Move History */
+        .move-history {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .move-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-item.x { border-left: 3px solid var(--accent-orange); }
+        .move-item.o { border-left: 3px solid var(--accent-blue); }
+
+        /* AI Thinking Animation */
+        .thinking {
+            display: inline-flex;
+            gap: 5px;
+        }
+
+        .thinking span {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-purple);
+            border-radius: 50%;
+            animation: bounce 0.6s ease infinite;
+        }
+
+        .thinking span:nth-child(2) { animation-delay: 0.1s; }
+        .thinking span:nth-child(3) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+        }
+
+        /* Advanced Parameters Panel */
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* God Level Indicator */
+        .god-level-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            border-radius: 10px;
+            color: var(--bg-primary);
+            font-weight: bold;
+        }
+
+        .god-level-indicator.inactive {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        /* Animation for winning */
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .celebrate {
+            animation: celebrate 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 TicTacToe AI Lab</h1>
+            <p>Train, compare, and battle against different AI models with advanced neural network simulation</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('train')">🏋️ Train AI</button>
+            <button class="tab-btn" onclick="switchTab('arena')">🏟️ Model Arena</button>
+            <button class="tab-btn" onclick="switchTab('play')">🎮 Play vs AI</button>
+            <button class="tab-btn" onclick="switchTab('analytics')">📊 Analytics</button>
+        </div>
+
+        <!-- Train AI Tab -->
+        <div id="train-tab" class="tab-content active">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>⚙️ Training Configuration</h2>
+                    
+                    <div class="form-group">
+                        <label>Model Name</label>
+                        <input type="text" id="model-name" value="strategic_agent_v1" placeholder="Enter model name...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Training Method</label>
+                        <select id="training-method">
+                            <option value="dqn">Deep Q-Network (DQN)</option>
+                            <option value="minimax">Minimax Training</option>
+                            <option value="genetic">Genetic Algorithm</option>
+                            <option value="mcts">Monte Carlo Tree Search</option>
+                        </select>
+                    </div>
+
+                    <div class="collapsible open">
+                        <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                            🔧 Advanced Parameters
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="form-group">
+                                <label>Preset Configurations</label>
+                                <div>
+                                    <button class="preset-btn" onclick="applyPreset('quick')">⚡ Quick Train</button>
+                                    <button class="preset-btn active" onclick="applyPreset('balanced')">⚖️ Balanced</button>
+                                    <button class="preset-btn" onclick="applyPreset('strong')">💪 Strong AI</button>
+                                    <button class="preset-btn" onclick="applyPreset('godlevel')">🔥 God Level</button>
+                                </div>
+                            </div>
+
+                            <div class="params-grid">
+                                <div class="form-group">
+                                    <label>Learning Rate: <span id="lr-value">0.001</span></label>
+                                    <input type="range" id="learning-rate" min="0.0001" max="0.01" step="0.0001" value="0.001" oninput="updateRangeValue('learning-rate', 'lr-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Epsilon (Exploration): <span id="eps-value">1.0</span></label>
+                                    <input type="range" id="epsilon" min="0" max="1" step="0.01" value="1" oninput="updateRangeValue('epsilon', 'eps-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Epsilon Decay: <span id="decay-value">0.995</span></label>
+                                    <input type="range" id="epsilon-decay" min="0.99" max="0.9999" step="0.0001" value="0.995" oninput="updateRangeValue('epsilon-decay', 'decay-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Discount Factor (γ): <span id="gamma-value">0.95</span></label>
+                                    <input type="range" id="gamma" min="0.8" max="0.99" step="0.01" value="0.95" oninput="updateRangeValue('gamma', 'gamma-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Batch Size: <span id="batch-value">64</span></label>
+                                    <input type="range" id="batch-size" min="16" max="256" step="16" value="64" oninput="updateRangeValue('batch-size', 'batch-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Memory Size: <span id="memory-value">10000</span></label>
+                                    <input type="range" id="memory-size" min="1000" max="50000" step="1000" value="10000" oninput="updateRangeValue('memory-size', 'memory-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Target Update Frequency: <span id="target-value">100</span></label>
+                                    <input type="range" id="target-update" min="10" max="500" step="10" value="100" oninput="updateRangeValue('target-update', 'target-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Hidden Layers: <span id="layers-value">2</span></label>
+                                    <input type="range" id="hidden-layers" min="1" max="5" step="1" value="2" oninput="updateRangeValue('hidden-layers', 'layers-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Neurons per Layer: <span id="neurons-value">128</span></label>
+                                    <input type="range" id="neurons" min="32" max="512" step="32" value="128" oninput="updateRangeValue('neurons', 'neurons-value')">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Dropout Rate: <span id="dropout-value">0.2</span></label>
+                                    <input type="range" id="dropout" min="0" max="0.5" step="0.05" value="0.2" oninput="updateRangeValue('dropout', 'dropout-value')">
+                                </div>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="use-cnn" checked>
+                                <label for="use-cnn">Use CNN Architecture (recommended for board games)</label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="use-augmentation" checked>
+                                <label for="use-augmentation">Enable Experience Augmentation (rotations/flips)</label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="use-double-dqn" checked>
+                                <label for="use-double-dqn">Use Double DQN (reduces overestimation)</label>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="use-prioritized" checked>
+                                <label for="use-prioritized">Prioritized Experience Replay</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Training Episodes: <span id="episodes-value">5000</span></label>
+                        <input type="range" id="episodes" min="100" max="50000" step="100" value="5000" oninput="updateRangeValue('episodes', 'episodes-value')">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Opponent Type</label>
+                        <select id="opponent-type">
+                            <option value="self">Self-Play</option>
+                            <option value="minimax">Minimax (Perfect Play)</option>
+                            <option value="random">Random</option>
+                            <option value="mixed">Mixed (Curriculum Learning)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startTraining()" id="train-btn">
+                        🚀 Start Training
+                    </button>
+                    <button class="btn btn-danger" onclick="stopTraining()" id="stop-btn" style="display: none;">
+                        ⏹️ Stop Training
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>📈 Training Progress</h2>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="training-progress" style="width: 0%"></div>
+                            <span class="progress-text" id="progress-text">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-3" style="margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="value" id="current-episode">0</div>
+                            <div class="label">Episodes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value" id="current-epsilon">1.00</div>
+                            <div class="label">Epsilon</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="value" id="current-winrate">0%</div>
+                            <div class="label">Win Rate</div>
+                        </div>
+                    </div>
+
+                    <div class="god-level-indicator inactive" id="god-level">
+                        <span>🔥</span>
+                        <span>God Level Status: Training...</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="training-chart"></canvas>
+                    </div>
+
+                    <h3 style="margin-top: 20px;">📝 Training Log</h3>
+                    <div class="training-log" id="training-log">
+                        <div class="log-entry info">Ready to start training...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💾 Saved Models</h2>
+                <div id="saved-models-list">
+                    <div class="status info">No models saved yet. Train a model to get started!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Arena Tab -->
+        <div id="arena-tab" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>🎯 Select Models for Tournament</h2>
+                    
+                    <div id="arena-models-list">
+                        <!-- Models will be populated here -->
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Games per Matchup</label>
+                        <input type="number" id="arena-games" value="50" min="10" max="1000">
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="include-minimax" checked>
+                        <label for="include-minimax">Include Perfect Minimax AI</label>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="include-random">
+                        <label for="include-random">Include Random Baseline</label>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="startTournament()">
+                        ⚔️ Start Tournament
+                    </button>
+                </div>
+
+                <div class="card">
+                    <h2>🏆 Tournament Results</h2>
+                    
+                    <div id="tournament-results">
+                        <div class="status info">Select models and start a tournament to see results.</div>
+                    </div>
+
+                    <div class="chart-container" id="arena-chart-container" style="display: none;">
+                        <canvas id="arena-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Match Details</h2>
+                <div id="match-details">
+                    <div class="status info">Match details will appear here after the tournament.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Play vs AI Tab -->
+        <div id="play-tab" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>🎮 Game Settings</h2>
+                    
+                    <div class="form-group">
+                        <label>Choose AI Opponent</label>
+                        <select id="play-model">
+                            <option value="minimax-hard">🔥 Minimax (Perfect)</option>
+                            <option value="minimax-medium" selected>⚖️ Minimax (Medium)</option>
+                            <option value="minimax-easy">😊 Minimax (Easy)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>AI Difficulty: <span id="difficulty-value">Medium</span></label>
+                        <input type="range" id="ai-difficulty" min="0" max="100" value="70" oninput="updateDifficulty()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Who Plays First?</label>
+                        <select id="first-player">
+                            <option value="human">You (❌)</option>
+                            <option value="ai">AI (⭕)</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="show-confidence" checked>
+                        <label for="show-confidence">Show AI Confidence Values</label>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="show-hints">
+                        <label for="show-hints">Show Move Hints</label>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="newGame()">🔄 New Game</button>
+                    <button class="btn btn-secondary" onclick="undoMove()">↩️ Undo Move</button>
+                </div>
+
+                <div class="card">
+                    <h2>📊 Your Statistics</h2>
+                    
+                    <div class="grid-3">
+                        <div class="stat-card wins">
+                            <div class="value" id="player-wins">0</div>
+                            <div class="label">Wins</div>
+                        </div>
+                        <div class="stat-card draws">
+                            <div class="value" id="player-draws">0</div>
+                            <div class="label">Draws</div>
+                        </div>
+                        <div class="stat-card losses">
+                            <div class="value" id="player-losses">0</div>
+                            <div class="label">Losses</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <label>Win Rate</label>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="winrate-bar" style="width: 0%; background: var(--accent-green);"></div>
+                            <span class="progress-text" id="winrate-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="game-container">
+                    <div id="game-status" class="status info">Your turn! Click an empty cell to play.</div>
+                    
+                    <div class="board" id="game-board">
+                        <div class="cell" data-index="0" onclick="makeMove(0)"></div>
+                        <div class="cell" data-index="1" onclick="makeMove(1)"></div>
+                        <div class="cell" data-index="2" onclick="makeMove(2)"></div>
+                        <div class="cell" data-index="3" onclick="makeMove(3)"></div>
+                        <div class="cell" data-index="4" onclick="makeMove(4)"></div>
+                        <div class="cell" data-index="5" onclick="makeMove(5)"></div>
+                        <div class="cell" data-index="6" onclick="makeMove(6)"></div>
+                        <div class="cell" data-index="7" onclick="makeMove(7)"></div>
+                        <div class="cell" data-index="8" onclick="makeMove(8)"></div>
+                    </div>
+
+                    <div id="confidence-display" class="confidence-grid" style="display: none;">
+                        <!-- Confidence values will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>📝 Move History</h3>
+                    <div class="move-history" id="move-history">
+                        <div class="status info">No moves yet. Start playing!</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📖 How to Play</h3>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        <li>You play as <strong style="color: var(--accent-orange);">❌ (X)</strong></li>
+                        <li>AI plays as <strong style="color: var(--accent-blue);">⭕ (O)</strong></li>
+                        <li>Get three in a row to win!</li>
+                        <li>Rows, columns, or diagonals count</li>
+                        <li>Higher difficulty = smarter AI</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="card">
+                <h2>📊 AI Performance Analytics</h2>
+                
+                <div class="grid-3">
+                    <div class="stat-card">
+                        <div class="value" id="total-games">0</div>
+                        <div class="label">Total Games Played</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="total-training">0</div>
+                        <div class="label">Training Episodes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="total-models">0</div>
+                        <div class="label">Models Trained</div>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="margin-top: 20px;">
+                    <canvas id="performance-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3>🏆 Model Leaderboard</h3>
+                    <table class="results-table" id="leaderboard">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Model</th>
+                                <th>Win Rate</th>
+                                <th>Games</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--text-secondary);">
+                                    No data available yet
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <h3>📈 Training History</h3>
+                    <div class="chart-container">
+                        <canvas id="history-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // Global State
+        // ==========================================
+        const state = {
+            board: Array(9).fill(0),
+            currentPlayer: 1, // 1 = X (human), -1 = O (AI)
+            gameOver: false,
+            winner: null,
+            moveHistory: [],
+            stats: {
+                wins: 0,
+                losses: 0,
+                draws: 0,
+                totalGames: 0
+            },
+            models: [],
+            training: {
+                isRunning: false,
+                episode: 0,
+                targetEpisodes: 5000,
+                rewards: [],
+                winRates: [],
+                losses: [],
+                epsilon: 1.0,
+                qTable: {},
+                intervalId: null
+            },
+            analytics: {
+                gamesPlayed: 0,
+                trainingEpisodes: 0,
+                modelsCount: 0
+            }
+        };
+
+        // ==========================================
+        // Constants
+        // ==========================================
+        const EMPTY = 0;
+        const PLAYER_X = 1;
+        const PLAYER_O = -1;
+
+        const WINNING_LINES = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]              // Diagonals
+        ];
+
+        // ==========================================
+        // Tab Switching
+        // ==========================================
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'arena') {
+                updateArenaModelsList();
+            }
+            if (tabName === 'analytics') {
+                updateAnalytics();
+            }
+        }
+
+        // ==========================================
+        // UI Helpers
+        // ==========================================
+        function updateRangeValue(inputId, displayId) {
+            const value = document.getElementById(inputId).value;
+            document.getElementById(displayId).textContent = value;
+        }
+
+        function toggleCollapsible(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        function applyPreset(preset) {
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const presets = {
+                quick: {
+                    learningRate: 0.005,
+                    epsilon: 1.0,
+                    epsilonDecay: 0.99,
+                    gamma: 0.9,
+                    episodes: 500,
+                    batchSize: 32,
+                    memorySize: 5000
+                },
+                balanced: {
+                    learningRate: 0.001,
+                    epsilon: 1.0,
+                    epsilonDecay: 0.995,
+                    gamma: 0.95,
+                    episodes: 5000,
+                    batchSize: 64,
+                    memorySize: 10000
+                },
+                strong: {
+                    learningRate: 0.0005,
+                    epsilon: 1.0,
+                    epsilonDecay: 0.999,
+                    gamma: 0.97,
+                    episodes: 15000,
+                    batchSize: 128,
+                    memorySize: 20000
+                },
+                godlevel: {
+                    learningRate: 0.0001,
+                    epsilon: 1.0,
+                    epsilonDecay: 0.9999,
+                    gamma: 0.99,
+                    episodes: 50000,
+                    batchSize: 256,
+                    memorySize: 50000
+                }
+            };
+
+            const p = presets[preset];
+            if (p) {
+                document.getElementById('learning-rate').value = p.learningRate;
+                document.getElementById('lr-value').textContent = p.learningRate;
+                document.getElementById('epsilon').value = p.epsilon;
+                document.getElementById('eps-value').textContent = p.epsilon;
+                document.getElementById('epsilon-decay').value = p.epsilonDecay;
+                document.getElementById('decay-value').textContent = p.epsilonDecay;
+                document.getElementById('gamma').value = p.gamma;
+                document.getElementById('gamma-value').textContent = p.gamma;
+                document.getElementById('episodes').value = p.episodes;
+                document.getElementById('episodes-value').textContent = p.episodes;
+                document.getElementById('batch-size').value = p.batchSize;
+                document.getElementById('batch-value').textContent = p.batchSize;
+                document.getElementById('memory-size').value = p.memorySize;
+                document.getElementById('memory-value').textContent = p.memorySize;
+            }
+        }
+
+        function updateDifficulty() {
+            const value = parseInt(document.getElementById('ai-difficulty').value);
+            let label = 'Easy';
+            if (value >= 80) label = 'God Level 🔥';
+            else if (value >= 60) label = 'Hard';
+            else if (value >= 40) label = 'Medium';
+            document.getElementById('difficulty-value').textContent = label;
+        }
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('training-log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // ==========================================
+        // Minimax AI
+        // ==========================================
+        function minimax(board, depth, isMaximizing, alpha, beta, player) {
+            const winner = checkWinner(board);
+            
+            if (winner === PLAYER_X) return -10 + depth;
+            if (winner === PLAYER_O) return 10 - depth;
+            if (winner === 0) return 0;
+            if (depth >= 9) return 0;
+
+            if (isMaximizing) {
+                let maxEval = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === EMPTY) {
+                        board[i] = PLAYER_O;
+                        const eval_ = minimax(board, depth + 1, false, alpha, beta, player);
+                        board[i] = EMPTY;
+                        maxEval = Math.max(maxEval, eval_);
+                        alpha = Math.max(alpha, eval_);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === EMPTY) {
+                        board[i] = PLAYER_X;
+                        const eval_ = minimax(board, depth + 1, true, alpha, beta, player);
+                        board[i] = EMPTY;
+                        minEval = Math.min(minEval, eval_);
+                        beta = Math.min(beta, eval_);
+                        if (beta <= alpha) break;
+                    }
+                }
+                return minEval;
+            }
+        }
+
+        function getBestMove(board, difficulty = 100) {
+            // Add randomness based on difficulty
+            if (Math.random() * 100 > difficulty) {
+                const emptyMoves = board.map((c, i) => c === EMPTY ? i : -1).filter(i => i !== -1);
+                return emptyMoves[Math.floor(Math.random() * emptyMoves.length)];
+            }
+
+            let bestScore = -Infinity;
+            let bestMove = -1;
+            const moves = [];
+
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === EMPTY) {
+                    board[i] = PLAYER_O;
+                    const score = minimax(board, 0, false, -Infinity, Infinity, PLAYER_O);
+                    board[i] = EMPTY;
+                    moves.push({ move: i, score });
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+
+            // Add some randomness for medium difficulty
+            if (difficulty < 90 && difficulty > 30) {
+                const goodMoves = moves.filter(m => m.score >= bestScore - 5);
+                return goodMoves[Math.floor(Math.random() * goodMoves.length)].move;
+            }
+
+            return bestMove;
+        }
+
+        function getConfidenceValues(board) {
+            const values = [];
+            for (let i = 0; i < 9; i++) {
+                if (board[i] !== EMPTY) {
+                    values.push({ position: i, value: null });
+                } else {
+                    board[i] = PLAYER_O;
+                    const score = minimax(board, 0, false, -Infinity, Infinity, PLAYER_O);
+                    board[i] = EMPTY;
+                    // Normalize score to 0-1 range
+                    const normalized = (score + 10) / 20;
+                    values.push({ position: i, value: normalized });
+                }
+            }
+            return values;
+        }
+
+        // ==========================================
+        // Game Logic
+        // ==========================================
+        function checkWinner(board) {
+            for (const line of WINNING_LINES) {
+                const [a, b, c] = line;
+                if (board[a] !== EMPTY && board[a] === board[b] && board[b] === board[c]) {
+                    return board[a];
+                }
+            }
+            if (board.every(cell => cell !== EMPTY)) {
+                return 0; // Draw
+            }
+            return null;
+        }
+
+        function getWinningLine(board) {
+            for (const line of WINNING_LINES) {
+                const [a, b, c] = line;
+                if (board[a] !== EMPTY && board[a] === board[b] && board[b] === board[c]) {
+                    return line;
+                }
+            }
+            return null;
+        }
+
+        function updateBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach((cell, index) => {
+                cell.className = 'cell';
+                if (state.board[index] === PLAYER_X) {
+                    cell.textContent = '❌';
+                    cell.classList.add('x');
+                } else if (state.board[index] === PLAYER_O) {
+                    cell.textContent = '⭕';
+                    cell.classList.add('o');
+                } else {
+                    cell.textContent = '';
+                }
+                
+                if (state.gameOver) {
+                    cell.classList.add('disabled');
+                }
+            });
+
+            // Highlight winning line
+            const winLine = getWinningLine(state.board);
+            if (winLine) {
+                winLine.forEach(index => {
+                    cells[index].classList.add('winning');
+                });
+            }
+
+            // Update confidence display
+            if (document.getElementById('show-confidence').checked && !state.gameOver) {
+                updateConfidenceDisplay();
+            } else {
+                document.getElementById('confidence-display').style.display = 'none';
+            }
+        }
+
+        function updateConfidenceDisplay() {
+            const container = document.getElementById('confidence-display');
+            const values = getConfidenceValues([...state.board]);
+            
+            container.innerHTML = values.map((v, i) => `
+                <div class="confidence-cell">
+                    <div class="position">Pos ${i + 1}</div>
+                    <div class="value">${v.value !== null ? (v.value * 100).toFixed(0) + '%' : '-'}</div>
+                </div>
+            `).join('');
+            
+            container.style.display = 'grid';
+        }
+
+        function updateStats() {
+            document.getElementById('player-wins').textContent = state.stats.wins;
+            document.getElementById('player-losses').textContent = state.stats.losses;
+            document.getElementById('player-draws').textContent = state.stats.draws;
+            
+            const total = state.stats.wins + state.stats.losses + state.stats.draws;
+            const winrate = total > 0 ? (state.stats.wins / total * 100).toFixed(0) : 0;
+            document.getElementById('winrate-bar').style.width = `${winrate}%`;
+            document.getElementById('winrate-text').textContent = `${winrate}%`;
+        }
+
+        function updateMoveHistory() {
+            const container = document.getElementById('move-history');
+            if (state.moveHistory.length === 0) {
+                container.innerHTML = '<div class="status info">No moves yet. Start playing!</div>';
+                return;
+            }
+
+            container.innerHTML = state.moveHistory.map((move, i) => `
+                <div class="move-item ${move.player === 'X' ? 'x' : 'o'}">
+                    <span>${i + 1}. ${move.player} → Position ${move.position + 1}</span>
+                    <span style="color: var(--text-secondary)">${move.time}</span>
+                </div>
+            `).reverse().join('');
+        }
+
+        function newGame() {
+            state.board = Array(9).fill(0);
+            state.gameOver = false;
+            state.winner = null;
+            state.moveHistory = [];
+            state.currentPlayer = PLAYER_X;
+
+            const firstPlayer = document.getElementById('first-player').value;
+            if (firstPlayer === 'ai' || (firstPlayer === 'random' && Math.random() < 0.5)) {
+                state.currentPlayer = PLAYER_O;
+                setTimeout(() => aiMove(), 500);
+            }
+
+            updateBoard();
+            updateMoveHistory();
+            document.getElementById('game-status').className = 'status info';
+            document.getElementById('game-status').textContent = state.currentPlayer === PLAYER_X 
+                ? "Your turn! Click an empty cell to play." 
+                : "AI is thinking...";
+        }
+
+        function makeMove(index) {
+            if (state.gameOver || state.board[index] !== EMPTY || state.currentPlayer !== PLAYER_X) {
+                return;
+            }
+
+            // Human move
+            state.board[index] = PLAYER_X;
+            state.moveHistory.push({
+                player: 'X',
+                position: index,
+                time: new Date().toLocaleTimeString()
+            });
+            
+            updateBoard();
+            updateMoveHistory();
+
+            const winner = checkWinner(state.board);
+            if (winner !== null) {
+                endGame(winner);
+                return;
+            }
+
+            // AI move
+            state.currentPlayer = PLAYER_O;
+            document.getElementById('game-status').innerHTML = 'AI is thinking... <span class="thinking"><span></span><span></span><span></span></span>';
+            
+            setTimeout(() => aiMove(), 300 + Math.random() * 500);
+        }
+
+        function aiMove() {
+            if (state.gameOver) return;
+
+            const difficulty = parseInt(document.getElementById('ai-difficulty').value);
+            const move = getBestMove([...state.board], difficulty);
+            
+            if (move !== -1 && move !== undefined) {
+                state.board[move] = PLAYER_O;
+                state.moveHistory.push({
+                    player: 'O',
+                    position: move,
+                    time: new Date().toLocaleTimeString()
+                });
+            }
+
+            updateBoard();
+            updateMoveHistory();
+
+            const winner = checkWinner(state.board);
+            if (winner !== null) {
+                endGame(winner);
+                return;
+            }
+
+            state.currentPlayer = PLAYER_X;
+            document.getElementById('game-status').className = 'status info';
+            document.getElementById('game-status').textContent = "Your turn! Click an empty cell to play.";
+        }
+
+        function endGame(winner) {
+            state.gameOver = true;
+            state.winner = winner;
+            state.stats.totalGames++;
+            state.analytics.gamesPlayed++;
+
+            const statusEl = document.getElementById('game-status');
+            
+            if (winner === PLAYER_X) {
+                state.stats.wins++;
+                statusEl.className = 'status success celebrate';
+                statusEl.textContent = '🎉 You Win! Congratulations!';
+            } else if (winner === PLAYER_O) {
+                state.stats.losses++;
+                statusEl.className = 'status error';
+                statusEl.textContent = '🤖 AI Wins! Better luck next time!';
+            } else {
+                state.stats.draws++;
+                statusEl.className = 'status warning';
+                statusEl.textContent = "🤝 It's a Draw! Well played!";
+            }
+
+            updateBoard();
+            updateStats();
+        }
+
+        function undoMove() {
+            if (state.moveHistory.length < 2 || state.gameOver) return;
+
+            // Undo last two moves (player + AI)
+            for (let i = 0; i < 2 && state.moveHistory.length > 0; i++) {
+                const lastMove = state.moveHistory.pop();
+                state.board[lastMove.position] = EMPTY;
+            }
+
+            state.currentPlayer = PLAYER_X;
+            updateBoard();
+            updateMoveHistory();
+            document.getElementById('game-status').className = 'status info';
+            document.getElementById('game-status').textContent = "Move undone. Your turn!";
+        }
+
+        // ==========================================
+        // Training Logic
+        // ==========================================
+        let trainingChart = null;
+
+        function initTrainingChart() {
+            const ctx = document.getElementById('training-chart').getContext('2d');
+            trainingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Win Rate %',
+                            data: [],
+                            borderColor: '#a6e3a1',
+                            backgroundColor: 'rgba(166, 227, 161, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Epsilon',
+                            data: [],
+                            borderColor: '#89b4fa',
+                            backgroundColor: 'rgba(137, 180, 250, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: 0,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Win Rate %',
+                                color: '#cdd6f4'
+                            },
+                            ticks: { color: '#cdd6f4' },
+                            grid: { color: 'rgba(205, 214, 244, 0.1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 0,
+                            max: 1,
+                            title: {
+                                display: true,
+                                text: 'Epsilon',
+                                color: '#cdd6f4'
+                            },
+                            ticks: { color: '#cdd6f4' },
+                            grid: { drawOnChartArea: false }
+                        },
+                        x: {
+                            ticks: { color: '#cdd6f4' },
+                            grid: { color: 'rgba(205, 214, 244, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#cdd6f4' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function simulateGame(qTable, epsilon, opponentType) {
+            const board = Array(9).fill(0);
+            let currentPlayer = PLAYER_X;
+            let moves = [];
+
+            while (true) {
+                const emptyPositions = board.map((c, i) => c === EMPTY ? i : -1).filter(i => i !== -1);
+                if (emptyPositions.length === 0) break;
+
+                let move;
+                if (currentPlayer === PLAYER_X) {
+                    // Training agent (Q-learning with exploration)
+                    if (Math.random() < epsilon) {
+                        move = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+                    } else {
+                        const stateKey = board.join(',');
+                        const qValues = qTable[stateKey] || Array(9).fill(0);
+                        move = emptyPositions.reduce((best, pos) => 
+                            qValues[pos] > qValues[best] ? pos : best, emptyPositions[0]);
+                    }
+                } else {
+                    // Opponent
+                    if (opponentType === 'minimax') {
+                        move = getBestMove(board, 100);
+                    } else if (opponentType === 'random') {
+                        move = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+                    } else { // mixed
+                        const difficulty = Math.random() * 100;
+                        move = getBestMove(board, difficulty);
+                    }
+                }
+
+                board[move] = currentPlayer;
+                moves.push({ player: currentPlayer, move, board: [...board] });
+
+                const winner = checkWinner(board);
+                if (winner !== null) {
+                    return { winner, moves };
+                }
+
+                currentPlayer = currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
+            }
+
+            return { winner: 0, moves };
+        }
+
+        function updateQTable(qTable, moves, result, gamma, learningRate) {
+            const reward = result === PLAYER_X ? 1 : (result === PLAYER_O ? -1 : 0.1);
+            
+            // Update Q-values for agent's moves (going backwards)
+            for (let i = moves.length - 1; i >= 0; i--) {
+                const { player, move, board } = moves[i];
+                if (player !== PLAYER_X) continue;
+
+                const prevBoard = i > 0 ? moves[i - 1].board : Array(9).fill(0);
+                const stateKey = prevBoard.join(',');
+                
+                if (!qTable[stateKey]) {
+                    qTable[stateKey] = Array(9).fill(0);
+                }
+
+                // Q-learning update
+                let futureReward = 0;
+                if (i < moves.length - 1) {
+                    const nextStateKey = board.join(',');
+                    const nextQ = qTable[nextStateKey] || Array(9).fill(0);
+                    futureReward = Math.max(...nextQ);
+                }
+
+                const currentQ = qTable[stateKey][move];
+                const finalReward = i === moves.length - 1 || i === moves.length - 2 ? reward : 0;
+                qTable[stateKey][move] = currentQ + learningRate * (finalReward + gamma * futureReward - currentQ);
+            }
+        }
+
+        function startTraining() {
+            const modelName = document.getElementById('model-name').value;
+            if (!modelName) {
+                log('Please enter a model name!', 'error');
+                return;
+            }
+
+            state.training.isRunning = true;
+            state.training.episode = 0;
+            state.training.targetEpisodes = parseInt(document.getElementById('episodes').value);
+            state.training.epsilon = parseFloat(document.getElementById('epsilon').value);
+            state.training.rewards = [];
+            state.training.winRates = [];
+            state.training.qTable = {};
+
+            const learningRate = parseFloat(document.getElementById('learning-rate').value);
+            const epsilonDecay = parseFloat(document.getElementById('epsilon-decay').value);
+            const gamma = parseFloat(document.getElementById('gamma').value);
+            const opponentType = document.getElementById('opponent-type').value;
+
+            document.getElementById('train-btn').style.display = 'none';
+            document.getElementById('stop-btn').style.display = 'inline-flex';
+
+            if (!trainingChart) {
+                initTrainingChart();
+            } else {
+                trainingChart.data.labels = [];
+                trainingChart.data.datasets[0].data = [];
+                trainingChart.data.datasets[1].data = [];
+                trainingChart.update();
+            }
+
+            log(`Starting training for "${modelName}"...`, 'success');
+            log(`Configuration: LR=${learningRate}, γ=${gamma}, ε-decay=${epsilonDecay}`, 'info');
+
+            let wins = 0, losses = 0, draws = 0;
+            const batchSize = 100;
+
+            state.training.intervalId = setInterval(() => {
+                if (!state.training.isRunning) {
+                    clearInterval(state.training.intervalId);
+                    return;
+                }
+
+                // Run batch of episodes
+                for (let b = 0; b < Math.min(batchSize, state.training.targetEpisodes - state.training.episode); b++) {
+                    const result = simulateGame(state.training.qTable, state.training.epsilon, opponentType);
+                    updateQTable(state.training.qTable, result.moves, result.winner, gamma, learningRate);
+
+                    if (result.winner === PLAYER_X) wins++;
+                    else if (result.winner === PLAYER_O) losses++;
+                    else draws++;
+
+                    state.training.epsilon = Math.max(0.01, state.training.epsilon * epsilonDecay);
+                    state.training.episode++;
+                }
+
+                // Update UI
+                const progress = (state.training.episode / state.training.targetEpisodes * 100);
+                document.getElementById('training-progress').style.width = `${progress}%`;
+                document.getElementById('progress-text').textContent = `${progress.toFixed(1)}%`;
+                document.getElementById('current-episode').textContent = state.training.episode;
+                document.getElementById('current-epsilon').textContent = state.training.epsilon.toFixed(4);
+
+                const totalGames = wins + losses + draws;
+                const winRate = totalGames > 0 ? (wins / totalGames * 100).toFixed(1) : 0;
+                document.getElementById('current-winrate').textContent = `${winRate}%`;
+
+                // Update chart
+                if (state.training.episode % (batchSize * 5) === 0) {
+                    trainingChart.data.labels.push(state.training.episode);
+                    trainingChart.data.datasets[0].data.push(parseFloat(winRate));
+                    trainingChart.data.datasets[1].data.push(state.training.epsilon);
+                    trainingChart.update('none');
+                }
+
+                // Check God Level
+                if (parseFloat(winRate) > 45 && state.training.epsilon < 0.1) {
+                    const godLevel = document.getElementById('god-level');
+                    godLevel.className = 'god-level-indicator';
+                    godLevel.innerHTML = '<span>🔥</span><span>God Level Status: ACHIEVED!</span>';
+                }
+
+                // Check if complete
+                if (state.training.episode >= state.training.targetEpisodes) {
+                    stopTraining();
+                    saveModel(modelName);
+                }
+            }, 10);
+        }
+
+        function stopTraining() {
+            state.training.isRunning = false;
+            if (state.training.intervalId) {
+                clearInterval(state.training.intervalId);
+            }
+
+            document.getElementById('train-btn').style.display = 'inline-flex';
+            document.getElementById('stop-btn').style.display = 'none';
+
+            log('Training stopped.', 'warning');
+        }
+
+        function saveModel(name) {
+            const model = {
+                name,
+                qTable: state.training.qTable,
+                episodes: state.training.episode,
+                winRate: document.getElementById('current-winrate').textContent,
+                epsilon: state.training.epsilon,
+                timestamp: new Date().toISOString()
+            };
+
+            state.models.push(model);
+            state.analytics.modelsCount++;
+            state.analytics.trainingEpisodes += state.training.episode;
+
+            updateSavedModelsList();
+            log(`Model "${name}" saved successfully!`, 'success');
+        }
+
+        function updateSavedModelsList() {
+            const container = document.getElementById('saved-models-list');
+            
+            if (state.models.length === 0) {
+                container.innerHTML = '<div class="status info">No models saved yet. Train a model to get started!</div>';
+                return;
+            }
+
+            container.innerHTML = state.models.map((model, i) => `
+                <div class="model-card">
+                    <div class="model-info">
+                        <div class="model-name">${model.name}</div>
+                        <div class="model-stats">
+                            ${model.episodes} episodes • ${model.winRate} win rate • ${new Date(model.timestamp).toLocaleString()}
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadModelForPlay(${i})">Play</button>
+                    <button class="btn btn-danger" onclick="deleteModel(${i})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteModel(index) {
+            state.models.splice(index, 1);
+            updateSavedModelsList();
+            updateArenaModelsList();
+        }
+
+        function loadModelForPlay(index) {
+            switchTab('play');
+            // Add model to play options
+            const select = document.getElementById('play-model');
+            const model = state.models[index];
+            if (!document.querySelector(`option[value="trained-${index}"]`)) {
+                const option = document.createElement('option');
+                option.value = `trained-${index}`;
+                option.textContent = `🤖 ${model.name}`;
+                select.appendChild(option);
+            }
+            select.value = `trained-${index}`;
+        }
+
+        // ==========================================
+        // Arena Logic
+        // ==========================================
+        let arenaChart = null;
+
+        function updateArenaModelsList() {
+            const container = document.getElementById('arena-models-list');
+            
+            const allModels = [
+                ...state.models.map((m, i) => ({ ...m, type: 'trained', index: i }))
+            ];
+
+            if (allModels.length === 0) {
+                container.innerHTML = '<div class="status info">No trained models available. Train some models first!</div>';
+                return;
+            }
+
+            container.innerHTML = allModels.map((model, i) => `
+                <div class="model-card">
+                    <input type="checkbox" id="arena-model-${i}" checked>
+                    <div class="model-info">
+                        <div class="model-name">${model.name}</div>
+                        <div class="model-stats">${model.episodes} episodes • ${model.winRate} win rate</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startTournament() {
+            const gamesPerMatch = parseInt(document.getElementById('arena-games').value);
+            const includeMinimax = document.getElementById('include-minimax').checked;
+            const includeRandom = document.getElementById('include-random').checked;
+
+            const participants = [];
+            
+            // Add trained models
+            state.models.forEach((model, i) => {
+                const checkbox = document.getElementById(`arena-model-${i}`);
+                if (checkbox && checkbox.checked) {
+                    participants.push({ name: model.name, type: 'trained', qTable: model.qTable });
+                }
+            });
+
+            // Add built-in AIs
+            if (includeMinimax) {
+                participants.push({ name: 'Minimax (Perfect)', type: 'minimax' });
+            }
+            if (includeRandom) {
+                participants.push({ name: 'Random', type: 'random' });
+            }
+
+            if (participants.length < 2) {
+                document.getElementById('tournament-results').innerHTML = 
+                    '<div class="status error">Please select at least 2 participants!</div>';
+                return;
+            }
+
+            // Initialize results
+            const results = {};
+            participants.forEach(p => {
+                results[p.name] = { wins: 0, losses: 0, draws: 0, points: 0 };
+            });
+
+            const matchDetails = [];
+
+            // Round-robin tournament
+            for (let i = 0; i < participants.length; i++) {
+                for (let j = i + 1; j < participants.length; j++) {
+                    const p1 = participants[i];
+                    const p2 = participants[j];
+                    let p1Wins = 0, p2Wins = 0, draws = 0;
+
+                    for (let g = 0; g < gamesPerMatch; g++) {
+                        const firstPlayer = g % 2 === 0 ? p1 : p2;
+                        const secondPlayer = g % 2 === 0 ? p2 : p1;
+                        
+                        const winner = playArenaGame(firstPlayer, secondPlayer);
+                        
+                        if (winner === PLAYER_X) {
+                            if (firstPlayer === p1) p1Wins++;
+                            else p2Wins++;
+                        } else if (winner === PLAYER_O) {
+                            if (secondPlayer === p1) p1Wins++;
+                            else p2Wins++;
+                        } else {
+                            draws++;
+                        }
+                    }
+
+                    results[p1.name].wins += p1Wins;
+                    results[p1.name].losses += p2Wins;
+                    results[p1.name].draws += draws;
+                    results[p1.name].points += p1Wins * 3 + draws;
+
+                    results[p2.name].wins += p2Wins;
+                    results[p2.name].losses += p1Wins;
+                    results[p2.name].draws += draws;
+                    results[p2.name].points += p2Wins * 3 + draws;
+
+                    matchDetails.push({
+                        player1: p1.name,
+                        player2: p2.name,
+                        p1Wins,
+                        p2Wins,
+                        draws
+                    });
+                }
+            }
+
+            // Display results
+            const sortedResults = Object.entries(results)
+                .sort((a, b) => b[1].points - a[1].points);
+
+            document.getElementById('tournament-results').innerHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Model</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Draws</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sortedResults.map(([name, stats], i) => `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${name}</td>
+                                <td style="color: var(--accent-green)">${stats.wins}</td>
+                                <td style="color: var(--accent-red)">${stats.losses}</td>
+                                <td style="color: var(--accent-yellow)">${stats.draws}</td>
+                                <td style="color: var(--accent-purple); font-weight: bold">${stats.points}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            // Match details
+            document.getElementById('match-details').innerHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Match</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${matchDetails.map(m => `
+                            <tr>
+                                <td>${m.player1} vs ${m.player2}</td>
+                                <td>${m.p1Wins} - ${m.draws} - ${m.p2Wins}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            // Update chart
+            document.getElementById('arena-chart-container').style.display = 'block';
+            if (arenaChart) arenaChart.destroy();
+            
+            const ctx = document.getElementById('arena-chart').getContext('2d');
+            arenaChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedResults.map(r => r[0]),
+                    datasets: [{
+                        label: 'Points',
+                        data: sortedResults.map(r => r[1].points),
+                        backgroundColor: '#cba6f7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#cdd6f4' } }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#cdd6f4' },
+                            grid: { color: 'rgba(205, 214, 244, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#cdd6f4' },
+                            grid: { color: 'rgba(205, 214, 244, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function playArenaGame(player1, player2) {
+            const board = Array(9).fill(0);
+            let currentPlayer = PLAYER_X;
+            const players = [player1, player2];
+
+            while (true) {
+                const emptyPositions = board.map((c, i) => c === EMPTY ? i : -1).filter(i => i !== -1);
+                if (emptyPositions.length === 0) break;
+
+                const currentParticipant = currentPlayer === PLAYER_X ? players[0] : players[1];
+                let move;
+
+                if (currentParticipant.type === 'minimax') {
+                    move = getBestMove(board, 100);
+                } else if (currentParticipant.type === 'random') {
+                    move = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+                } else if (currentParticipant.type === 'trained') {
+                    const stateKey = board.join(',');
+                    const qValues = currentParticipant.qTable[stateKey] || Array(9).fill(0);
+                    move = emptyPositions.reduce((best, pos) => 
+                        qValues[pos] > qValues[best] ? pos : best, emptyPositions[0]);
+                }
+
+                board[move] = currentPlayer;
+
+                const winner = checkWinner(board);
+                if (winner !== null) return winner;
+
+                currentPlayer = currentPlayer === PLAYER_X ? PLAYER_O : PLAYER_X;
+            }
+
+            return 0;
+        }
+
+        // ==========================================
+        // Analytics
+        // ==========================================
+        let performanceChart = null;
+        let historyChart = null;
+
+        function updateAnalytics() {
+            document.getElementById('total-games').textContent = state.analytics.gamesPlayed;
+            document.getElementById('total-training').textContent = state.analytics.trainingEpisodes;
+            document.getElementById('total-models').textContent = state.analytics.modelsCount;
+
+            // Performance chart
+            if (!performanceChart) {
+                const ctx = document.getElementById('performance-chart').getContext('2d');
+                performanceChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Wins', 'Losses', 'Draws'],
+                        datasets: [{
+                            data: [state.stats.wins, state.stats.losses, state.stats.draws],
+                            backgroundColor: ['#a6e3a1', '#f38ba8', '#f9e2af']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { labels: { color: '#cdd6f4' } }
+                        }
+                    }
+                });
+            } else {
+                performanceChart.data.datasets[0].data = [state.stats.wins, state.stats.losses, state.stats.draws];
+                performanceChart.update();
+            }
+
+            // Leaderboard
+            const leaderboard = state.models
+                .map(m => ({
+                    name: m.name,
+                    winRate: parseFloat(m.winRate) || 0,
+                    games: m.episodes
+                }))
+                .sort((a, b) => b.winRate - a.winRate);
+
+            const tbody = document.getElementById('leaderboard-body');
+            if (leaderboard.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No data available yet</td></tr>';
+            } else {
+                tbody.innerHTML = leaderboard.map((m, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${m.name}</td>
+                        <td style="color: var(--accent-green)">${m.winRate}%</td>
+                        <td>${m.games}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // ==========================================
+        // Initialization
+        // ==========================================
+        function init() {
+            newGame();
+            updateSavedModelsList();
+            updateStats();
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Core ML stack (Windows CPU build)
+# Note: TF 2.10 is the last version with native GPU support on Windows.
+tensorflow==2.10.1
+
+# Scientific & plotting
+numpy==1.23.5
+matplotlib==3.7.3
+pandas==1.5.3
+seaborn==0.12.2
+
+# Utilities
+tqdm==4.66.1
+threadpoolctl==3.5.0
+h5py==3.8.0
+protobuf==3.19.6
+
+# Note: 'tkinter' is a standard Python library and usually comes pre-installed.
+# If you get an error, you may need to install it via your OS package manager
+# (e.g., 'sudo apt-get install python3-tk' on Linux).
